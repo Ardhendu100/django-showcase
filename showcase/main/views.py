@@ -28,6 +28,9 @@ def generate_username(self, first_name):
 
 
 def signin(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+        
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -47,6 +50,8 @@ def signin(request):
 
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect('/')
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -78,7 +83,7 @@ def signup(request):
 
 
 # Log out user
-def handelLogout(request):
+def signout(request):
     logout(request)
     messages.success(request, "Successfully logged out")
-    return redirect('homepage')
+    return redirect('/')
