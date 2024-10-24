@@ -5,8 +5,9 @@ from django.contrib.auth  import authenticate,  login, logout
 from django.contrib.auth.hashers import make_password,check_password
 from .forms import SignUpForm, ContactForm
 from .models import ContactResponse
-
+from django.core.mail import send_mail
 from .backends import EmailBackend 
+from django.conf import settings
 
 
 def homepage(request):
@@ -101,7 +102,53 @@ def contactus(request):
                 subject=form.cleaned_data['subject'],
                 message=form.cleaned_data['message']
             )
+            # Email content for admin
+            admin_subject = "New Contact Us Query Received"
+            admin_message = f"""
+            You have received a new query from {form.cleaned_data['name']}.
+            Here are the details:
+
+            Name: {form.cleaned_data['name']}
+            Email: {form.cleaned_data['email']}
+            Subject: {form.cleaned_data['subject']}
+            Message: {form.cleaned_data['message']}
+            """
+            
+            # Send email to admin
+            send_mail(
+                admin_subject,
+                admin_message,
+                settings.EMAIL_HOST_USER,
+                ['admin@example.com'],  # Replace with the actual admin email
+                fail_silently=False,
+            )
+            
+            
+            # Email content for user
+            user_subject = "Thank you for contacting us"
+            user_message = f"""
+            Dear {form.cleaned_data['name']},
+
+            Thank you for reaching out! We have received your message and will get back to you shortly.
+
+            Your message:
+            {form.cleaned_data['message']}
+
+            Best regards,
+            Ardhendu
+            """
+            # Send confirmation email to the user
+            send_mail(
+                user_subject,
+                user_message,
+                settings.EMAIL_HOST_USER,
+                [form.cleaned_data['email']],
+                fail_silently=False,
+            )
+
+            
             messages.success(request, 'Your message has been successfully sent.')
+            
             return redirect('/contact-us')
         else:
             print("outside")
