@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Contact Us
+{% endblock %}
+
+{% block content %}
+
+<div class="map-container">
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3742.1050780134397!2d85.7329683759928!3d20.295917312543807!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a190790a1bf846d%3A0x5ae2407e4cde29c3!2sAcropolis%2C%20Acropolis%20Rd%2C%20Gothapatna%2C%20Odisha%20751003!5e0!3m2!1sen!2sin!4v1729753441397!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+    <div class="message-icon" onclick="showForm()">&#9993;</div>
+
+    <div class="contact-form" id="contactForm">
+        
+        <h3>Contact Us
+            <span class="material-icons close-icon" onclick="closeForm()">close</span>
+
+        </h3>
+        <form action="{% url 'contactus' %}"  method="POST">
+            {% csrf_token %}
+            <input type="text" id="name" name="name" placeholder="Your Name" maxlength=100 required>
+            <input type="email" id="email" name="email" placeholder="Your Email" maxlength=100 required>
+            <input type="text" id="subject" name="subject" placeholder="Your Subject" maxlength=200 required>
+            <textarea id="message" placeholder="Your Message" name="message" rows="5" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showForm() {
+        document.getElementById('contactForm').style.display = 'block';
+    }
+    function closeForm() {
+        document.getElementById('contactForm').style.display = 'none';
+    }
+    
+</script>
+{% endblock %}

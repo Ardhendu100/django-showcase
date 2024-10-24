@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import random
+from .models import ContactResponse
 
 
 class SignUpForm(forms.ModelForm):
@@ -37,3 +38,15 @@ class SignUpForm(forms.ModelForm):
             username = f"{base_username}{random_digit}"
         
         return username
+
+
+class ContactForm(forms.ModelForm):
+    
+    class Meta:
+        model = ContactResponse
+        fields = ['name', 'email', 'subject', 'message']
+        
+    name = forms.CharField(max_length=100, required=True)
+    email = forms.EmailField(max_length=100, required=True)
+    subject = forms.CharField(max_length=200, required=True)
+    message = forms.CharField(widget=forms.Textarea)

@@ -3,7 +3,9 @@ from django.contrib import messages
 from django.contrib.auth.models import User,auth
 from django.contrib.auth  import authenticate,  login, logout
 from django.contrib.auth.hashers import make_password,check_password
-from .forms import SignUpForm
+from .forms import SignUpForm, ContactForm
+from .models import ContactResponse
+
 from .backends import EmailBackend 
 
 
@@ -87,3 +89,25 @@ def signout(request):
     logout(request)
     messages.success(request, "Successfully logged out")
     return redirect('/')
+
+
+def contactus(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            ContactResponse.objects.create(
+                name=form.cleaned_data['name'],
+                email=form.cleaned_data['email'],
+                subject=form.cleaned_data['subject'],
+                message=form.cleaned_data['message']
+            )
+            messages.success(request, 'Your message has been successfully sent.')
+            return redirect('/contact-us')
+        else:
+            print("outside")
+            for field, errors in form.errors.items():
+                print(f"{field}: {', '.join(errors)}")
+    else:
+        form = SignUpForm()
+        
+    return render(request, 'main/contact.html', {'form': form})
