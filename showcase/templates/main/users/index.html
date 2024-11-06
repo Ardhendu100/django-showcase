@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  Users
+{% endblock %}
+
+{% block content %}
+  <main>
+    <div class="container mt-5">
+      <div class="row">
+        {% for user in users %}
+          <div class="col-md-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{{user.first_name}} {{user.last_name}}</h5>
+                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+{% endblock %}

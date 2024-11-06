@@ -1,9 +1,126 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 
 {% block title %}
-Home Page
+  Home Page
 {% endblock %}
 
 {% block content %}
+  <!-- Main content of your homepage -->
+  <main>
+   
+  </main>
+  <!-- Chatbox icon -->
+  <div id="chatbox-icon" onclick="openChat()">
+    <i class="fas fa-comment-dots"></i>
+  </div>
 
+  <!-- Chatbox popup -->
+  <div class="card chat-popup" id="chatbox-form">
+    <div class="card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+      <p class="mb-0 fw-bold">Live chat</p>
+      <i class="fas fa-times" type="button" onclick="closeChat()"></i>
+    </div>
+    <div class="card-body">
+      <form action="#" class="form-container">
+        <div class="d-flex flex-row justify-content-start mb-4">
+          <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar 1" style="width: 45px; height: 100%;" />
+          <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+            <p class="small mb-0">Hi, how can I help you?</p>
+          </div>
+        </div>
+        <div id="chat-messages"></div>
+
+        <div class="input-container mt-3">
+          <textarea id="user-input" placeholder="Ask something.." name="msg" required></textarea>
+          <a class="send-btn" id="send-btn"><i class="fas fa-paper-plane"></i></a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Include jQuery and Font Awesome for icons -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+  <script>
+    // Function to open the chatbox
+    function openChat() {
+      document.getElementById('chatbox-form').style.display = 'block'
+      displayMessages() // Load messages when chatbox opens
+    }
+    
+    // Function to close the chatbox
+    function closeChat() {
+      document.getElementById('chatbox-form').style.display = 'none'
+    }
+    
+    // Function to send a message
+    function sendMessage() {
+      const userMessage = document.getElementById('user-input').value
+      if (userMessage) {
+        // Add user message to session storage
+        addMessageToSession('user', userMessage)
+    
+        // Send the message to the server
+        $.ajax({
+          url: '/chatbot',
+          type: 'POST',
+          data: JSON.stringify({ message: userMessage }),
+          contentType: 'application/json',
+          success: function (response) {
+            const botMessage = response.message
+            // Add bot response to session storage
+            addMessageToSession('bot', botMessage)
+            displayMessages() // Refresh the displayed messages
+            document.getElementById('user-input').value = '' // Clear input
+          }
+        })
+      }
+    }
+    
+    // Function to add a message to session storage
+    function addMessageToSession(sender, message) {
+      let messages = JSON.parse(sessionStorage.getItem('chatMessages')) || []
+      messages.push({ sender, message })
+      sessionStorage.setItem('chatMessages', JSON.stringify(messages))
+    }
+    
+    // Function to display messages from session storage
+    function displayMessages() {
+      const messages = JSON.parse(sessionStorage.getItem('chatMessages')) || []
+      const chatMessagesDiv = document.getElementById('chat-messages')
+      chatMessagesDiv.innerHTML = '' // Clear existing messages
+    
+      messages.forEach((msg) => {
+        const messageDiv = document.createElement('div')
+        messageDiv.classList.add('d-flex', 'flex-row', 'mb-4')
+        const avatar = document.createElement('img')
+        avatar.src = msg.sender === 'user' ? 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp' : 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp'
+        avatar.style.width = '45px'
+        avatar.style.height = '100%'
+        const messageBubble = document.createElement('div')
+        messageBubble.classList.add('p-3', 'ms-3', 'border-radius', '15px', msg.sender === 'user' ? 'bg-body-tertiary' : 'bg-info', 'text-white')
+        messageBubble.innerHTML = `<p class="small mb-0">${msg.message}</p>`
+        messageDiv.appendChild(avatar)
+        messageDiv.appendChild(messageBubble)
+        chatMessagesDiv.appendChild(messageDiv)
+      })
+    
+      // Scroll to the bottom of the messages
+      chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight
+    }
+    
+    // Add event listener for send button click
+    document.getElementById('send-btn').addEventListener('click', function () {
+      sendMessage()
+    })
+    
+    // Add event listener for Enter key to send message
+    document.getElementById('user-input').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        sendMessage()
+        e.preventDefault() // Prevent newline in textarea
+      }
+    })
+  </script>
 {% endblock %}

@@ -99,3 +99,106 @@ body, html {
         padding: 15px;
     }
 }
+
+/* Chatbox icon */
+#chatbox-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    padding: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#chatbox-icon i {
+    font-size: 24px;
+}
+
+/* Chatbox popup */
+.chat-popup {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    width: 330px;
+    height: 400px;
+    border: 3px solid #f1f1f1;
+    background-color: #fff;
+    border-radius: 10px 10px 0 0;
+    z-index: 9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for form inside the chat popup */
+.form-container {
+    padding: 10px;
+    background-color: white;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.form-container textarea {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 10px 0;
+    border: none;
+    background: #f1f1f1;
+    border-radius: 5px;
+    resize: none;
+    min-height: 80px;
+}
+
+.form-container .btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    opacity: 0.9;
+    border-radius: 5px;
+}
+
+.form-container .btn:hover {
+    opacity: 1;
+}
+
+.form-container .cancel {
+    background-color: red;
+}
+
+#messages {
+    height: 200px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.input-container {
+    position: relative;
+    width: 100%;
+}
+#user-input {
+    width: 100%;
+    padding-right: 40px; /* Add space for the icon */
+    border-radius: 15px; /* Rounded corners */
+    resize: none; /* Prevent resizing */
+}
+.send-btn {
+    position: absolute;
+    right: 10px; /* Position it within the textarea */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #007bff; /* Icon color */
+    cursor: pointer;
+    font-size: 18px; /* Icon size */
+    z-index: 1; /* Ensure it’s above the textarea */
+}

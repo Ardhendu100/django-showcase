@@ -8,10 +8,20 @@ from .models import ContactResponse
 from django.core.mail import send_mail
 from .backends import EmailBackend 
 from django.conf import settings
+from openai import OpenAI
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
+
+
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 def homepage(request):
-    return render(request, 'main/home.html')
+    if request.user.is_authenticated:
+        return render(request, 'main/home.html')
+    else:
+        return render(request, 'main/auth/login.html')
 
 def generate_username(self, first_name):
         # Create a base username
@@ -158,3 +168,33 @@ def contactus(request):
         form = SignUpForm()
         
     return render(request, 'main/contact.html', {'form': form})
+
+
+@csrf_exempt  # Disable CSRF protection for simplicity (optional)
+def chatbot(request):
+    if request.method == 'POST':
+        # Get user input from POST request
+        data = json.loads(request.body)
+        user_input = data.get('message', '')
+       
+        if user_input:
+            # Send request to OpenAI API
+            try:
+                response = client.chat.completions.create(model="gpt-3.5-turbo",  # Use the GPT-3.5 Turbo model
+                messages=[
+                    {"role": "user", "content": user_input}
+                ],
+                max_tokens=50 
+                )
+                answer = response.choices[0].message.content.strip()
+                return JsonResponse({'message': answer})
+            except Exception as e:
+                print(f"Error: {str(e)}")
+                return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+def users(request):
+    user_list = User.objects.all()  # Fetch all users from the database
+    return render(request, 'main/users/index.html', {'users': user_list})

@@ -8,5 +8,10 @@ urlpatterns = [
     path('sign-in', views.signin, name="signin"),
     path('sign-out', views.signout, name="signout"),
     path('contact-us', views.contactus, name="contactus"),
+    path('chatbot', views.chatbot, name="chatbot"),
+    
+    # users
+    path('users', views.users, name='users'),
+    
 
 ]
