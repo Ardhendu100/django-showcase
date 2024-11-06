@@ -12,6 +12,9 @@ from openai import OpenAI
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+import random
+from django.utils import timezone
+from datetime import timedelta
 
 
 
@@ -198,3 +201,64 @@ def chatbot(request):
 def users(request):
     user_list = User.objects.all()  # Fetch all users from the database
     return render(request, 'main/users/index.html', {'users': user_list})
+
+
+# Send OTP
+def generate_otp():
+    return random.randint(100000, 999999)
+
+@csrf_exempt
+def send_otp(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Parse JSON data
+            email = data.get("email")
+            if email:
+                if User.objects.filter(email=email).exists():
+                    return JsonResponse({"error": "Email already registered"}, status=400)
+                otp = generate_otp()
+                request.session['otp'] = otp
+                request.session['otp_verified'] = False
+                request.session['otp_created_at'] = timezone.now().isoformat()
+                # Send email with the OTP
+                send_mail(
+                    'One Time Password (OTP) for Verification',
+                    f"We are pleased to inform you that your One-Time Password (OTP) is: {otp}.\n\n"
+                    "It is valid for 3 minutes only.\n\n"
+                    "Please use this OTP to complete your verification process. For security reasons, do not share this OTP with anyone.",
+                    'ShowCase',
+                    [email],
+                )
+
+                return JsonResponse({"success": True})
+            else:
+                return JsonResponse({"success": False, "error": "Email not provided"})
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Invalid JSON data"})
+    return JsonResponse({"success": False, "error": "Invalid request method"})
+
+@csrf_exempt
+def verify_otp(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Parse JSON data
+            user_otp = data.get("otp")
+            session_otp = request.session.get("otp")
+            otp_created_at = request.session.get("otp_created_at")
+
+            # Check if OTP is expired
+            if otp_created_at:
+                otp_creation_time = timezone.datetime.fromisoformat(otp_created_at)
+                current_time = timezone.now()
+                if current_time - otp_creation_time > timedelta(minutes=3):
+                    return JsonResponse({"success": False, "error": "OTP has expired"})
+            
+
+            if user_otp and str(user_otp) == str(session_otp):
+                request.session['otp_verified'] = True
+                return JsonResponse({"success": True})
+            else:
+                return JsonResponse({"success": False, "error": "Please enter valid OTP"})
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Invalid JSON data"})
+    return JsonResponse({"success": False, "error": "Invalid request method"})

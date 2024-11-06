@@ -12,3 +12,13 @@ class ContactResponse(models.Model):
     
     def __str__(self):
         return self.name
+    
+
+class Otp(models.Model):
+    
+    email = models.EmailField()
+    otp = models.CharField(max_length=7)
+    sent_on = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.email
