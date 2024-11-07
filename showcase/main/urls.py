@@ -1,6 +1,6 @@
 from django.urls import path
-
 from . import views
+from .views import get_stock
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
@@ -16,6 +16,10 @@ urlpatterns = [
     
     # users
     path('users', views.users, name='users'),
+    
+    # stocks
+    path('get-stocks', views.get_stock, name='get_stock'),
+    path('get-meta-stocks', views.get_meta_stock, name='get_meta_stock'),
     
 
 ]

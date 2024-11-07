@@ -15,7 +15,7 @@ import json
 import random
 from django.utils import timezone
 from datetime import timedelta
-
+from .helpers import get_all_stock_urls, get_stock_price
 
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -262,3 +262,15 @@ def verify_otp(request):
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "error": "Invalid JSON data"})
     return JsonResponse({"success": False, "error": "Invalid request method"})
+
+
+def get_stock(request):
+    get_all_stock_urls()
+    return JsonResponse({'status' : 200})
+
+
+def get_meta_stock(request):
+    get_stock_price()
+    return JsonResponse({'status' : 200})
+    
+    

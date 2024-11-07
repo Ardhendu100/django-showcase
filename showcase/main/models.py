@@ -1,5 +1,4 @@
 from django.db import models
-
 # Create your models here.
 
 
@@ -22,3 +21,10 @@ class Otp(models.Model):
     
     def __str__(self):
         return self.email
+
+class Stocks(models.Model):
+    stock_name = models.CharField(max_length=100)
+    stock_url = models.URLField()
+    class Meta:
+        verbose_name_plural = "Stocks"
+        ordering = ['stock_name']
