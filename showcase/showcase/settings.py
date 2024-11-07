@@ -98,11 +98,21 @@ SOCIALACCOUNT_PROVIDERS = {
         'METHOD': 'oauth2',
         'VERIFIED_EMAIL': True,
     },
+    'facebook': {
+        'APP': {
+            'client_id': os.getenv('FB_CLIENT_ID'),
+            'secret': os.getenv('FB_SECRET_KEY'),
+            'SCOPE': ['email',],
+            'METHOD': 'oauth2',
+            'VERIFIED_EMAIL': True,
+           
+        }
+    },
     'github': {
         'APP': {
             'client_id': os.getenv('GIT_CLIENT_ID'),
             'secret': os.getenv('GIT_SECRET_KEY'),
-            'SCOPE': ['profile', 'email',],
+            'SCOPE': ['email',],
             'METHOD': 'oauth2',
             'VERIFIED_EMAIL': True,
            
