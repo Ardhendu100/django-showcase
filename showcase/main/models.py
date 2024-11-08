@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 # Create your models here.
 
 
@@ -25,6 +26,11 @@ class Otp(models.Model):
 class Stocks(models.Model):
     stock_name = models.CharField(max_length=100)
     stock_url = models.URLField()
+    high_price = models.CharField(max_length=100, default=0)
+    low_price = models.CharField(max_length=100, default=0)
+    returns = models.CharField(max_length=100, default='0.00%')
+    last_fetched_on = models.DateTimeField(default=timezone.now)
+
     class Meta:
         verbose_name_plural = "Stocks"
         ordering = ['stock_name']

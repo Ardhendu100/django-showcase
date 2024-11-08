@@ -10,4 +10,4 @@ class ContactResponseAdmin(admin.ModelAdmin):
 
 @admin.register(Stocks)
 class StockAdmin(admin.ModelAdmin):
-    list_display = ('stock_name', 'stock_url')
+    list_display = ('stock_name', 'stock_url', 'high_price', 'low_price', 'returns', 'last_fetched_on')

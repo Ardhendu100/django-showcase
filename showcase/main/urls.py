@@ -20,6 +20,7 @@ urlpatterns = [
     # stocks
     path('get-stocks', views.get_stock, name='get_stock'),
     path('get-meta-stocks', views.get_meta_stock, name='get_meta_stock'),
-    
+    path('stocks', views.stocks, name='stocks'),
+    path('stock/<int:id>/', views.fetch_stock_price, name='fetch_stock_price'),
 
 ]

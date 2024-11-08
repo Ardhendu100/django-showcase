@@ -15,16 +15,19 @@ import json
 import random
 from django.utils import timezone
 from datetime import timedelta
-from .helpers import get_all_stock_urls, get_stock_price
+from .helpers import get_all_stock_urls, get_stock_price, fetch_stock_data
+from .models import Stocks
 
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
 
 def homepage(request):
     if request.user.is_authenticated:
         return render(request, 'main/home.html')
     else:
         return render(request, 'main/auth/login.html')
+
 
 def generate_username(self, first_name):
         # Create a base username
@@ -207,6 +210,7 @@ def users(request):
 def generate_otp():
     return random.randint(100000, 999999)
 
+
 @csrf_exempt
 def send_otp(request):
     if request.method == "POST":
@@ -237,6 +241,7 @@ def send_otp(request):
             return JsonResponse({"success": False, "error": "Invalid JSON data"})
     return JsonResponse({"success": False, "error": "Invalid request method"})
 
+
 @csrf_exempt
 def verify_otp(request):
     if request.method == "POST":
@@ -264,6 +269,11 @@ def verify_otp(request):
     return JsonResponse({"success": False, "error": "Invalid request method"})
 
 
+def stocks(request):
+    stock_list = Stocks.objects.all()
+    return render(request, 'main/stocks/index.html', {'stocks': stock_list})
+
+
 def get_stock(request):
     get_all_stock_urls()
     return JsonResponse({'status' : 200})
@@ -272,5 +282,18 @@ def get_stock(request):
 def get_meta_stock(request):
     get_stock_price()
     return JsonResponse({'status' : 200})
+
+
+def fetch_stock_price(request, id):
+    stock = Stocks.objects.get(id=id)
+    if stock:
+        fetch_stock_data(stock)
+        return JsonResponse({
+        'status': 200,
+        'high_price': stock.high_price,
+        'low_price': stock.low_price,
+        'returns': stock.returns,
+        'last_fetched_on': stock.last_fetched_on.strftime('%Y-%m-%d %H:%M:%S'),
+    })
     
     
