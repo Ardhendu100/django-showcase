@@ -23,6 +23,7 @@ client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
 def homepage(request):
+    
     if request.user.is_authenticated:
         return render(request, 'main/home.html')
     else:

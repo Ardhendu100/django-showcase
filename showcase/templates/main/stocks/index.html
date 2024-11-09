@@ -28,30 +28,28 @@
                   </thead>
                   <tbody>
                     {% for stock in stocks %}
-                        <tr id="stock-row-{{ stock.id }}">
-                            <td class="text-md font-weight-normal">{{ stock.stock_name }}</td>
-                            <td class="text-md font-weight-normal text-wrap">
-                                <a href="{{ "https://stocks.zerodha.com"|add:stock.stock_url }}" target="_blank">
-                                    {{ "https://stocks.zerodha.com"|add:stock.stock_url }}
-                                </a>
-                            </td>
-                            <td class="text-md font-weight-normal" id="high-price-{{ stock.id }}">{{ stock.high_price }}</td>
-                            <td class="text-md font-weight-normal" id="low-price-{{ stock.id }}">{{ stock.low_price }}</td>
-                            <td class="text-md font-weight-normal" 
-    id="returns-{{ stock.id }}" 
-    style="color: {% if stock.returns|slice:":1" == '-' %}red{% else %}green{% endif %};">
-    {{ stock.returns }}
-</td>
+                      <tr id="stock-row-{{ stock.id }}">
+                        <td class="text-md font-weight-normal">{{ stock.stock_name }}</td>
+                        <td class="text-md font-weight-normal text-wrap">
+                          <a href="{{ 'https://stocks.zerodha.com'|add:stock.stock_url }}" target="_blank">{{ 'https://stocks.zerodha.com'|add:stock.stock_url }}</a>
+                        </td>
+                        <td class="text-md font-weight-normal" id="high-price-{{ stock.id }}">{{ stock.high_price }}</td>
+                        <td class="text-md font-weight-normal" id="low-price-{{ stock.id }}">{{ stock.low_price }}</td>
+                        <td class="text-md font-weight-normal"
+                          id="returns-{{ stock.id }}"
+                          style="color: {% if stock.returns|slice:':1' == '-' %}
+                            red
+                          {% else %}
+                            green
+                          {% endif %};">{{ stock.returns }}</td>
 
-
-                            <td class="text-md font-weight-normal" id="last-fetched-{{ stock.id }}">    {{ stock.last_fetched_on|date:"F j, Y, g:i a" }}</td>
-                            <td class="text-md font-weight-normal">
-                                <button class="btn btn-primary fetch-button" data-id="{{ stock.id }}">Fetch</button>
-                            </td>
-                        </tr>
+                        <td class="text-md font-weight-normal" id="last-fetched-{{ stock.id }}">{{ stock.last_fetched_on|date:'F j, Y, g:i a' }}</td>
+                        <td class="text-md font-weight-normal">
+                          <button class="btn btn-primary fetch-button" data-id="{{ stock.id }}">Fetch</button>
+                        </td>
+                      </tr>
                     {% endfor %}
-                </tbody>
-                
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -64,40 +62,39 @@
 
   <script type="text/javascript">
     $(document).ready(function () {
-        $('#datatable-basic').DataTable();
-
-        // Handle click on Fetch button
-        $('.fetch-button').on('click', function () {
-            var button = $(this);
-            var stockId = button.data('id');
-            
-            // Disable the button to prevent multiple clicks
-            button.prop('disabled', true).text('Fetching...');
-
-            // Make AJAX request to fetch stock data
-            $.ajax({
-                url: `/stock/${stockId}/`,  // URL pattern based on Django's URL configuration
-                type: 'GET',
-                success: function (response) {
-                    if (response.status === 200) {
-                        // Update the stock data in the table without page refresh
-                        $('#high-price-' + stockId).text(response.high_price);
-                        $('#low-price-' + stockId).text(response.low_price);
-                        $('#returns-' + stockId).text(response.returns);
-                        $('#last-fetched-' + stockId).text(response.last_fetched_on);
-                        button.text('Fetched');
-                    }
-                },
-                error: function () {
-                    alert('Error fetching stock data.');
-                },
-                complete: function () {
-                    // Re-enable the button if needed (optional)
-                    button.prop('disabled', false).text('Fetch');
-                }
-            });
-        });
-    });
-</script>
-
+      $('#datatable-basic').DataTable()
+    
+      // Handle click on Fetch button
+      $('.fetch-button').on('click', function () {
+        var button = $(this)
+        var stockId = button.data('id')
+    
+        // Disable the button to prevent multiple clicks
+        button.prop('disabled', true).text('Fetching...')
+    
+        // Make AJAX request to fetch stock data
+        $.ajax({
+          url: `/stock/${stockId}/`, // URL pattern based on Django's URL configuration
+          type: 'GET',
+          success: function (response) {
+            if (response.status === 200) {
+              // Update the stock data in the table without page refresh
+              $('#high-price-' + stockId).text(response.high_price)
+              $('#low-price-' + stockId).text(response.low_price)
+              $('#returns-' + stockId).text(response.returns)
+              $('#last-fetched-' + stockId).text(response.last_fetched_on)
+              button.text('Fetched')
+            }
+          },
+          error: function () {
+            alert('Error fetching stock data.')
+          },
+          complete: function () {
+            // Re-enable the button if needed (optional)
+            button.prop('disabled', false).text('Fetch')
+          }
+        })
+      })
+    })
+  </script>
 {% endblock %}

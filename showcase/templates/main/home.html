@@ -7,8 +7,39 @@
 {% block content %}
   <!-- Main content of your homepage -->
   <main>
-   
+    <div className="container news-listing-wrapper">
+      <div class="row mt-4 p-3">
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              {% comment %} <div className="bg-white rounded-lg shadow-md w-64 hover:shadow-lg transition-shadow cursor-pointer">
+                <div className="bg-blue-100 rounded-full p-2">
+                  <a href="#" class="btn btn-outline-primary bsb-btn-circle bsb-btn-circle-2xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-phone-fill" viewBox="0 0 16 16">
+                      <path d="M3 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V2zm6 11a1 1 0 1 0-2 0 1 1 0 0 0 2 0z" />
+                    </svg>
+                  </a>
+                </div>
+              </div> {% endcomment %}
+              <h5 class="card-title">Mobile Number Verification</h5>
+              <p class="card-text">Please enter the OTP sent to your mobile number to complete verification.</p>
+              <a href="#" class="btn btn-primary">Verify Mobile</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Stock Market Data Extraction</h5>
+              <p class="text-muted"><small>This feature demonstrates my <strong>web scraping</strong> skills, fetching real-time stock details like highs, lows, and returns to provide valuable market insights.</small></p>
+              <a href="/stocks" class="btn btn-primary">Explore Stocks</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
   <!-- Chatbox icon -->
   <div id="chatbox-icon" onclick="openChat()">
     <i class="fas fa-comment-dots"></i>
