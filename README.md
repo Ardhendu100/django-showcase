@@ -7,3 +7,11 @@ https://medium.com/@tommyraspati/monitoring-your-django-project-with-prometheus-
 
 
 https://hodovi.cc/blog/django-monitoring-with-prometheus-and-grafana/
+
+To start and stop grafana server
+
+sudo systemctl start grafana-server
+sudo systemctl stop grafana-server
+
+To restart prometheus
+./prometheus --config.file=prometheus.yml
