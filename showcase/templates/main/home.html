@@ -9,7 +9,7 @@
   <main>
     <div className="container news-listing-wrapper">
       <div class="row mt-4 p-3">
-        <div class="col-md-3">
+        <div class="col-md-4 mb-3">
           <div class="card">
             <div class="card-body">
               {% comment %} <div className="bg-white rounded-lg shadow-md w-64 hover:shadow-lg transition-shadow cursor-pointer">
@@ -27,12 +27,21 @@
             </div>
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4 mb-3">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Stock Market Data Extraction</h5>
               <p class="text-muted"><small>This feature demonstrates my <strong>web scraping</strong> skills, fetching real-time stock details like highs, lows, and returns to provide valuable market insights.</small></p>
               <a href="/stocks" class="btn btn-primary">Explore Stocks</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Real-Time System Monitoring Dashboard</h5>
+              <p class="text-muted"><small>A comprehensive monitoring system using <strong>Grafana and Prometheus</strong> to track and visualize application metrics. This tool provides real-time insights, ensuring optimal performance and proactive issue resolution.</small></p>
+              <a href="{{ grafana_url }}" class="btn btn-primary" target="_blank">View Dashboard</a>
             </div>
           </div>
         </div>

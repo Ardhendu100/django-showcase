@@ -25,7 +25,10 @@ client = OpenAI(api_key=settings.OPENAI_API_KEY)
 def homepage(request):
     
     if request.user.is_authenticated:
-        return render(request, 'main/home.html')
+        context = {
+        'grafana_url': settings.GRAFANA_URL,
+        }
+        return render(request, 'main/home.html', context)
     else:
         return render(request, 'main/auth/login.html')
 
