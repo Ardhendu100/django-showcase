@@ -21,3 +21,7 @@ sudo systemctl stop grafana-server
 To restart prometheus
 
 ./prometheus --config.file=prometheus.yml
+
+
+To run celery
+celery -A showcase worker --loglevel=info
