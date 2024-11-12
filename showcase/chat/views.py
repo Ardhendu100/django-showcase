@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Message
@@ -8,9 +8,15 @@ from django.utils import timezone
 
 
 @login_required
-def chat_room(request, room_name):
+def chat_room(request, room_name=None):
+    # If no room_name is provided, redirect to the user's own room
+    if room_name is None:
+        room_name = request.user.username + '(You)'  # Default to the user's username as room_name
+    
     search_query = request.GET.get('search', '') 
-    users = User.objects.exclude(id=request.user.id) 
+    users = User.objects.exclude(id=request.user.id)
+    
+    # Fetch chats for the specific room_name
     chats = Message.objects.filter(
         (Q(sender=request.user) & Q(receiver__username=room_name)) |
         (Q(receiver=request.user) & Q(sender__username=room_name))
@@ -33,10 +39,8 @@ def chat_room(request, room_name):
             'last_message': last_message
         })
 
-    # Make datetime.datetime.min timezone-aware
     min_time = timezone.make_aware(datetime.datetime.min)
 
-    # Sort user_last_messages by the timestamp of the last_message in descending order
     user_last_messages.sort(
         key=lambda x: x['last_message'].timestamp if x['last_message'] else min_time,
         reverse=True

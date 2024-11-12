@@ -19,7 +19,7 @@
 
       #chatbox {
         /* border-radius: 10px; */
-        background-color: #f8f9fa;
+        background-color: #343a40!important
         overflow-y: auto;
         height: calc(100vh - 180px);
         padding: 10px;
@@ -113,7 +113,7 @@
       <div class="row h-100">
         <!-- User List Sidebar (4 Columns) -->
         <div class="col-3 sidebar p-3 chats">
-          <h5 class="mb-3 text-white">Chats</h5>
+          <h5 class="mb-3 ml-3 text-white">Chats</h5>
           <div class="contacts">
             {% for item in user_last_messages %}
             <a
@@ -134,7 +134,7 @@
                 <div class="w-100">
                   <div class="d-flex justify-content-between">
                     <strong class="text-truncate"
-                      >{{ item.user.username }}</strong
+                      >{{ item.user.first_name }}</strong
                     >
                     {% if item.last_message %}
                     <small class="text-nowrap timestamp">
