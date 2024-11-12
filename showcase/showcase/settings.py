@@ -54,7 +54,7 @@ SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'main.backends.EmailBackend', 
 ]
 
 MIDDLEWARE = [
@@ -202,3 +202,6 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 GRAFANA_URL = os.getenv('GRAFANA_URL')
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
