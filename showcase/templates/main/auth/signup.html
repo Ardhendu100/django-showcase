@@ -179,7 +179,7 @@
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            document.getElementById('email').disabled = true
+            document.getElementById('email').readonly = true
             document.getElementById('send-otp-btn').style.display = 'none'
             document.getElementById('otp-section').style.display = 'none'
             document.getElementById('otp-error').style.display = 'none'

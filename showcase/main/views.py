@@ -17,6 +17,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .helpers import get_all_stock_urls, get_stock_price, fetch_stock_data
 from .models import Stocks
+from .tasks import send_welcome_email
 
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -58,7 +59,9 @@ def signin(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         # Authenticate user using the custom backend
-        user = EmailBackend().authenticate(request, email=email, password=password)    
+        # user = EmailBackend().authenticate(request, email=email, password=password)  
+        user = authenticate(request, email=email, password=password, backend='main.backends.EmailBackend')
+  
 
         if user is not None:
             login(request, user)
@@ -77,6 +80,10 @@ def signup(request):
         return redirect('/')
     if request.method == "POST":
         form = SignUpForm(request.POST)
+        
+        for field, value in form.data.items():
+            print(f"{field}: {value}")
+        
         if form.is_valid():
             print(form.cleaned_data['first_name'])
             username = form.generate_username(form.cleaned_data['first_name'])
@@ -90,11 +97,14 @@ def signup(request):
                 password=form.cleaned_data['password']
             )
             user.save()
-            login(request, user)  # Log the user in after successful signup
+            send_welcome_email.delay(user.email, user.first_name)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
             messages.success(request, "Signup successful!")
             return redirect('/')
         else:
             print("outside")
+         
             for field, errors in form.errors.items():
                 print(f"{field}: {', '.join(errors)}")
             
@@ -104,7 +114,7 @@ def signup(request):
     
     return render(request, 'main/auth/signup.html', {'form': form})
 
-
+    
 # Log out user
 def signout(request):
     logout(request)
