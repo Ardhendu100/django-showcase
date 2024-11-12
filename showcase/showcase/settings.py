@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +49,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.github',
-    'django_prometheus'
+    'django_prometheus',
+    'chat'
 ]
 
 SITE_ID = 1
@@ -89,12 +92,20 @@ TEMPLATES = [
     },
 ]
 
-#Social login settings
+ASGI_APPLICATION = 'showcase.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+# Social login settings
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id' : os.getenv('GOOGLE_CLIENT_ID'),
+            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
             'secret': os.getenv('GOOGLE_SECRET_KEY')
         },
         'SCOPE': ['profile', 'email',],

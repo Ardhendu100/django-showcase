@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('main.urls')),
+    path('', include('chat.urls')),
     path("prometheus/", include("django_prometheus.urls")),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
