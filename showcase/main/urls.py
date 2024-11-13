@@ -22,5 +22,8 @@ urlpatterns = [
     path('get-meta-stocks', views.get_meta_stock, name='get_meta_stock'),
     path('stocks', views.stocks, name='stocks'),
     path('stock/<int:id>/', views.fetch_stock_price, name='fetch_stock_price'),
+    
+    path('send-mobile-otp/', views.send_mobile_otp, name='send_mobile_otp'),
+    path('verify-mobile-otp/', views.verify_mobile_otp, name='verify_mobile_otp'),
 
 ]

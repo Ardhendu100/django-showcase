@@ -4,7 +4,7 @@ from django.contrib.auth.models import User,auth
 from django.contrib.auth  import authenticate,  login, logout
 from django.contrib.auth.hashers import make_password,check_password
 from .forms import SignUpForm, ContactForm
-from .models import ContactResponse
+from .models import ContactResponse, UserProfile
 from django.core.mail import send_mail
 from .backends import EmailBackend 
 from django.conf import settings
@@ -18,6 +18,8 @@ from datetime import timedelta
 from .helpers import get_all_stock_urls, get_stock_price, fetch_stock_data
 from .models import Stocks
 from .tasks import send_welcome_email
+from . import verify
+from django.core.exceptions import ObjectDoesNotExist
 
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -26,9 +28,19 @@ client = OpenAI(api_key=settings.OPENAI_API_KEY)
 def homepage(request):
     
     if request.user.is_authenticated:
-        context = {
-        'grafana_url': settings.GRAFANA_URL,
-        }
+        try:
+            profile = UserProfile.objects.get(user=request.user)
+        except ObjectDoesNotExist:
+            profile = None
+        if profile:
+            context = {
+            'grafana_url': settings.GRAFANA_URL,
+            'mobile_number': profile.mobile_number,
+            }
+        else:
+            context = {
+            'grafana_url': settings.GRAFANA_URL,
+            }
         return render(request, 'main/home.html', context)
     else:
         return render(request, 'main/auth/login.html')
@@ -310,4 +322,53 @@ def fetch_stock_price(request, id):
         'last_fetched_on': stock.last_fetched_on.strftime('%Y-%m-%d %H:%M:%S'),
     })
     
-    
+
+@csrf_exempt
+def send_mobile_otp(request):
+    if request.method == "POST":
+        data = json.loads(request.body)  # Parse the JSON data
+        mobile_number = data.get('mobile_number')
+        print("mobile_number", mobile_number)
+        if not mobile_number:
+            return JsonResponse({"error": "Mobile number is required"}, status=400)
+        
+        
+
+        # Send OTP
+        verify.send(mobile_number)
+
+        return JsonResponse({'message': 'OTP sent successfully', 'mobile_number': mobile_number})
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+@csrf_exempt
+def verify_mobile_otp(request):
+    if request.method == 'POST':
+        try:
+            # Get phone number and OTP code from the request body
+            data = json.loads(request.body)
+            phone_number = data.get('mobile_number')
+            otp_code = data.get('otp_code')
+            
+            print("phone_number", phone_number)
+            print("otp_code", otp_code)
+            
+
+            if not phone_number or not otp_code:
+                return JsonResponse({'error': 'Mobile number and OTP code are required.'}, status=400)
+
+            # Call the check function to validate OTP
+            is_verified = verify.check(phone_number, otp_code)
+
+            if is_verified:
+                user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+                user_profile.mobile_number = phone_number
+                user_profile.save()
+                return JsonResponse({'message': 'OTP verified successfully.'})
+            else:
+                return JsonResponse({'error': 'Invalid OTP code.'}, status=400)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)

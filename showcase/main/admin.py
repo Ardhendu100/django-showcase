@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import ContactResponse, Stocks
+from .models import ContactResponse, Stocks, UserProfile
 # Register your models here.
 
+
+admin.site.register(UserProfile)
 
 @admin.register(ContactResponse)
 class ContactResponseAdmin(admin.ModelAdmin):

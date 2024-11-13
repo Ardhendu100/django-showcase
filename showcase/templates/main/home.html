@@ -12,26 +12,26 @@
         <div class="col-md-4 mb-3">
           <div class="card">
             <div class="card-body">
-              {% comment %} <div className="bg-white rounded-lg shadow-md w-64 hover:shadow-lg transition-shadow cursor-pointer">
-                <div className="bg-blue-100 rounded-full p-2">
-                  <a href="#" class="btn btn-outline-primary bsb-btn-circle bsb-btn-circle-2xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-phone-fill" viewBox="0 0 16 16">
-                      <path d="M3 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V2zm6 11a1 1 0 1 0-2 0 1 1 0 0 0 2 0z" />
-                    </svg>
-                  </a>
-                </div>
-              </div> {% endcomment %}
-              <h5 class="card-title">Mobile Number Verification</h5>
-              <p class="card-text">Please enter the OTP sent to your mobile number to complete verification.</p>
-              <a href="#" class="btn btn-primary">Verify Mobile</a>
-            </div>
+              <h5 class="card-title">Verify Your Mobile Number</h5>
+          
+              {% if mobile_number %}
+                  <p>Your mobile number is: {{ mobile_number }}.</p>
+                  <p>It's already verified.</p>
+              {% else %}
+                  <input type="text" class="form-control mb-3" name="mobile_number" id="mobile_number" placeholder="Enter Mobile Number" required />
+                  <button class="btn btn-primary mobile-verify mt-2" data-bs-toggle="modal" data-bs-target="#otpModal">Verify</button>
+              {% endif %}
+          </div>
+          
           </div>
         </div>
         <div class="col-md-4 mb-3">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Stock Market Data Extraction</h5>
-              <p class="text-muted"><small>This feature demonstrates my <strong>web scraping</strong> skills, fetching real-time stock details like highs, lows, and returns to provide valuable market insights.</small></p>
+              <p class="text-muted">
+                <small>This feature demonstrates my <strong>web scraping</strong> skills, fetching real-time stock details like highs, lows, and returns to provide valuable market insights.</small>
+              </p>
               <a href="/stocks" class="btn btn-primary">Explore Stocks</a>
             </div>
           </div>
@@ -40,7 +40,9 @@
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Real-Time System Monitoring Dashboard</h5>
-              <p class="text-muted"><small>A comprehensive monitoring system using <strong>Grafana and Prometheus</strong> to track and visualize application metrics. This tool provides real-time insights, ensuring optimal performance and proactive issue resolution.</small></p>
+              <p class="text-muted">
+                <small>A comprehensive monitoring system using <strong>Grafana and Prometheus</strong> to track and visualize application metrics. This tool provides real-time insights, ensuring optimal performance and proactive issue resolution.</small>
+              </p>
               <a href="{{ grafana_url }}" class="btn btn-primary" target="_blank">View Dashboard</a>
             </div>
           </div>
@@ -50,15 +52,12 @@
             <div class="card-body">
               <h5 class="card-title">Real-Time Chat Application</h5>
               <p class="text-muted">
-                <small>
-                  An interactive chat application built with <strong>Django Channels</strong> and <strong>WebSockets</strong> for real-time messaging. This feature demonstrates instant communication and live updates, showcasing advanced backend and frontend integration skills for seamless user experiences.
-                </small>
+                <small>An interactive chat application built with <strong>Django Channels</strong> and <strong>WebSockets</strong> for real-time messaging. This feature demonstrates instant communication and live updates, showcasing advanced backend and frontend integration skills for seamless user experiences.</small>
               </p>
               <a href="/chat" class="btn btn-primary" target="_blank">Start Chat</a>
             </div>
           </div>
         </div>
-        
       </div>
     </div>
   </main>
@@ -91,6 +90,32 @@
       </form>
     </div>
   </div> {% endcomment %}
+
+  <!-- OTP Modal -->
+  <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+
+          <h5 class="text-center mb-4" style="color: #ff0000;">Please enter the one time password<br />to verify your account</h5>
+
+          <form>
+            <div class="d-flex justify-content-center mb-4">
+              {% with range='123456' %}
+                {% for _ in range %}
+                  <input type="text" maxlength="1" class="otp-input" pattern="\d*" style="width: 30px; margin: 10px; text-align: center" />
+                {% endfor %}
+              {% endwith %}
+            </div>
+            <div class="d-flex justify-content-center">
+              <button type="submit" class="btn btn-danger validate-btn">Validate</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Include jQuery and Font Awesome for icons -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -175,6 +200,111 @@
         sendMessage()
         e.preventDefault() // Prevent newline in textarea
       }
+    })
+  </script>
+
+  <script>
+    document.querySelector('.mobile-verify').addEventListener('click', function(event) {
+      event.preventDefault();
+  
+      const mobileNumber = document.getElementById('mobile_number').value;
+      console.log(mobileNumber)
+      if (mobileNumber) {
+        fetch('{% url "send_mobile_otp" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: JSON.stringify({ mobile_number: mobileNumber }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            // Show OTP modal if OTP is sent successfully
+            document.getElementById('otpModal').setAttribute('data-mobile-number', data.mobile_number);
+
+            $('#otpModal').modal('show');
+          } else {
+            alert(data.error || 'An error occurred.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while sending OTP.');
+        });
+      } else {
+        alert('Please enter a valid mobile number.');
+      }
+    });
+
+    document.querySelector('.validate-btn').addEventListener('click', function(event) {
+      event.preventDefault();
+    
+      const mobileNumber = document.getElementById('otpModal').getAttribute('data-mobile-number');
+      const otpCode = Array.from(document.querySelectorAll('.otp-input')).map(input => input.value).join(''); // Get OTP code from the inputs
+    
+      if (otpCode.length === 6) {  // Check if OTP code is complete
+        fetch('{% url "verify_mobile_otp" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: JSON.stringify({ mobile_number: mobileNumber, otp_code: otpCode }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            alert(data.message); // OTP verified successfully
+            $('#otpModal').modal('hide');
+            setTimeout(function() {
+              window.location.reload();
+            }, 500);
+          } else {
+            alert(data.error || 'An error occurred.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while verifying OTP.');
+        });
+      } else {
+        alert('Please enter the complete OTP.');
+      }
+    });
+    
+  </script>
+  
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const inputs = document.querySelectorAll('.otp-input')
+    
+      inputs.forEach((input, index) => {
+        // Auto-focus next input
+        input.addEventListener('input', function () {
+          if (this.value) {
+            this.value = this.value.replace(/[^0-9]/g, '') // Only allow numbers
+            if (index < inputs.length - 1) {
+              inputs[index + 1].focus()
+            }
+          }
+        })
+    
+        // Handle backspace
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Backspace' && !this.value && index > 0) {
+            inputs[index - 1].focus()
+          }
+        })
+      })
+    
+      // Clear inputs when modal is hidden
+      const otpModal = document.getElementById('otpModal')
+      otpModal.addEventListener('hidden.bs.modal', function () {
+        inputs.forEach((input) => (input.value = ''))
+      })
     })
   </script>
 {% endblock %}

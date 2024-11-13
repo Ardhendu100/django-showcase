@@ -18,3 +18,6 @@ class OnlineStatus(models.Model):
 
     def __str__(self):
         return f"{self.user.username} is {'online' if self.is_online else 'offline'}"
+    
+    class Meta:
+        verbose_name_plural = "Online Status"
