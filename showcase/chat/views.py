@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Message
+from .models import Message, OnlineStatus
 from django.db.models import Q
 import datetime
 from django.utils import timezone
@@ -34,9 +34,12 @@ def chat_room(request, room_name=None):
             (Q(receiver=request.user) & Q(sender=user))
         ).order_by('-timestamp').first()
 
+        online_status = OnlineStatus.objects.filter(user=user).first()
         user_last_messages.append({
             'user': user,
-            'last_message': last_message
+            'last_message': last_message,
+            'is_online': OnlineStatus.objects.filter(user=user).first().is_online if OnlineStatus.objects.filter(user=user).exists() else False,
+            'last_seen': online_status.last_seen if online_status else None
         })
 
     min_time = timezone.make_aware(datetime.datetime.min)
