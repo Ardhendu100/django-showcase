@@ -27,8 +27,7 @@ SECRET_KEY = 'django-insecure-@99pr$oz@2!b^l7kz98&3qo)devjih^gu2rkxgy_o2fh*co4tr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -94,9 +93,17 @@ TEMPLATES = [
 
 ASGI_APPLICATION = 'showcase.asgi.application'
 
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels.layers.InMemoryChannelLayer',
+#     },
+# }
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],  # Connect to your Redis container
+        },
     },
 }
 
@@ -220,3 +227,10 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 TWILIO_VERIFY_SERVICE_SID = os.getenv('TWILIO_VERIFY_SERVICE_SID')
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+
+REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
+REDIS_PORT = 6379
+
+DJANGO_SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+
+PROMETHEUS_EXPORT_MIGRATIONS = os.getenv("PROMETHEUS_EXPORT_MIGRATIONS", True)
