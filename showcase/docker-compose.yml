@@ -9,7 +9,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ../.env  # This will load variables from the ../.env file
+      - ./.env  # This will load variables from the ../.env file
     depends_on:
       - redis
     networks:
@@ -28,7 +28,7 @@ services:
     volumes:
       - .:/app
     env_file:
-      - ../.env  # This will load variables from the ../.env file
+      - ./.env  # This will load variables from the ../.env file
     depends_on:
       - redis
     networks:
@@ -40,7 +40,7 @@ services:
     volumes:
       - .:/app
     env_file:
-      - ../.env  # This will load variables from the ../.env file
+      - ./.env  # This will load variables from the ../.env file
     depends_on:
       - redis
     networks:
